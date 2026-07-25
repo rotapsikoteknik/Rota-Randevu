@@ -560,7 +560,7 @@ function ClientsView({ clients, onOpenTaahhutname }) {
     <div style={{ maxWidth: 640, margin: "18px auto 0", padding: "0 16px 32px" }}>
       <div style={{ position: "relative", marginBottom: 14 }}>
         <Search size={15} color="#8a8474" style={{ position: "absolute", left: 12, top: 12 }} />
-        <<input
+        <input
           value={q}
           onChange={(e) = /> /> setQ(e.target.value)}
           placeholder="Danışan ara..."
