@@ -560,9 +560,9 @@ function ClientsView({ clients, onOpenTaahhutname }) {
     <div style={{ maxWidth: 640, margin: "18px auto 0", padding: "0 16px 32px" }}>
       <div style={{ position: "relative", marginBottom: 14 }}>
         <Search size={15} color="#8a8474" style={{ position: "absolute", left: 12, top: 12 }} />
-        <<input
+        <input
           value={q}
-          onChange={(e) = /> /> setQ(e.target.value)}
+          onChange={(e) => setQ(e.target.value)}
           placeholder="Danışan ara..."
           style={{ ...inputStyle, paddingLeft: 34 }}
         />
@@ -694,19 +694,19 @@ function TaahhutnameView({ prefill, onBack }) {
       <div className="no-print" style={{ background: "white", border: "1px solid #ece7d8", borderRadius: 14, padding: 14, marginBottom: 16 }}>
         <div style={{ fontSize: 11, fontWeight: 800, color: "#8a8474", textTransform: "uppercase", letterSpacing: 0.4, marginBottom: 10 }}>Temel Bilgiler</div>
         <Field label="Ad Soyad">
-          <input value={clientName} onChange={(e) = /> setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
+          <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
         </Field>
         <Field label="Telefon">
-          <input value={phone} onChange={(e) = /> setPhone(e.target.value)} style={inputStyle} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} style={inputStyle} />
         </Field>
         <Field label="Tarih">
-          <input type="date" value={docDate} onChange={(e) = /> setDocDate(e.target.value)} style={inputStyle} />
+          <input type="date" value={docDate} onChange={(e) => setDocDate(e.target.value)} style={inputStyle} />
         </Field>
 
         <div style={{ fontSize: 11, fontWeight: 800, color: "#8a8474", textTransform: "uppercase", letterSpacing: 0.4, margin: "16px 0 10px" }}>Danışan Bilgi Kartı</div>
         {EXTRA_FIELDS.map((f) => (
           <Field key={f.key} label={f.label}>
-            <input type={f.type || "text"} value={extra[f.key] || ""} onChange={(e) = /> setField(f.key, e.target.value)} style={inputStyle} />
+            <input type={f.type || "text"} value={extra[f.key] || ""} onChange={(e) => setField(f.key, e.target.value)} style={inputStyle} />
           </Field>
         ))}
 
@@ -869,10 +869,10 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
         </div>
 
         <Field label="Ad Soyad">
-          <input value={clientName} onChange={(e) = /> setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
+          <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
         </Field>
         <Field label="Telefon">
-          <input value={phone} onChange={(e) = /> setPhone(e.target.value)} placeholder="05xx xxx xx xx" style={inputStyle} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" style={inputStyle} />
         </Field>
         <Field label="Hizmet Türü">
           <select value={service} onChange={(e) => setService(e.target.value)} style={inputStyle}>
@@ -880,7 +880,7 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
           </select>
         </Field>
         <Field label="Ücret (₺)">
-          <input type="number" value={price} onChange={(e) = /> setPrice(e.target.value)} placeholder="0" style={inputStyle} />
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" style={inputStyle} />
         </Field>
         <Field label="Ödeme Durumu">
           <div style={{ display: "flex", gap: 6 }}>
@@ -895,11 +895,11 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
         </Field>
         {payStatus === "kismi" && (
           <Field label="Ödenen Tutar (₺)">
-            <input type="number" value={paidAmount} onChange={(e) = /> setPaidAmount(e.target.value)} placeholder="0" style={inputStyle} />
+            <input type="number" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} placeholder="0" style={inputStyle} />
           </Field>
         )}
         <Field label="Not (opsiyonel)">
-          <input value={note} onChange={(e) = /> setNote(e.target.value)} placeholder="Kurum, sevk vb." style={inputStyle} />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Kurum, sevk vb." style={inputStyle} />
         </Field>
 
         <div style={{ background: "white", border: "1px solid #ece7d8", borderRadius: 12, padding: 12, marginBottom: 12 }}>
@@ -914,10 +914,10 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
             <div style={{ marginTop: 12 }}>
               {EXTRA_FIELDS.map((f) => (
                 <Field key={f.key} label={f.label}>
-                  <<input
+                  <input
                     type={f.type || "text"}
                     value={extraInfo[f.key] || ""}
-                    onChange={(e) = /> /> setExtra(f.key, e.target.value)}
+                    onChange={(e) => setExtra(f.key, e.target.value)}
                     style={inputStyle}
                   />
                 </Field>
@@ -928,13 +928,13 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
 
         <div style={{ background: "white", border: "1px solid #ece7d8", borderRadius: 12, padding: 12, marginBottom: 12 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-            <input type="checkbox" checked={documentIssued} onChange={(e) = /> setDocumentIssued(e.target.checked)} style={{ width: 16, height: 16 }} />
+            <input type="checkbox" checked={documentIssued} onChange={(e) => setDocumentIssued(e.target.checked)} style={{ width: 16, height: 16 }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Belge Teslim Edildi</span>
           </label>
           {documentIssued && (
             <div style={{ marginTop: 10 }}>
               <Field label="Belge Teslim Tarihi">
-                <input type="date" value={issueDate} onChange={(e) = /> setIssueDate(e.target.value)} style={inputStyle} />
+                <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} style={inputStyle} />
               </Field>
               <div style={{ fontSize: 12, color: "#8a8474" }}>
                 Geçerlilik süresi <strong style={{ color: NAVY }}>{fmtDateShortTR(expiryPreview)}</strong> tarihinde sona erecek ({validityYears} yıl).
@@ -984,21 +984,21 @@ function SettingsModal({ settings, onClose, onSave }) {
 
         <div style={{ fontSize: 11, fontWeight: 800, color: GOLD, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 8 }}>Çalışma Saatleri</div>
         <Field label="Başlangıç Saati">
-          <input type="number" min={0} max={23} value={startHour} onChange={(e) = /> setStartHour(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={0} max={23} value={startHour} onChange={(e) => setStartHour(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Bitiş Saati">
-          <input type="number" min={1} max={24} value={endHour} onChange={(e) = /> setEndHour(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} max={24} value={endHour} onChange={(e) => setEndHour(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Randevu Süresi (dakika)">
-          <input type="number" min={10} step={5} value={stepMin} onChange={(e) = /> setStepMin(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={10} step={5} value={stepMin} onChange={(e) => setStepMin(Number(e.target.value))} style={inputStyle} />
         </Field>
 
         <div style={{ fontSize: 11, fontWeight: 800, color: GOLD, textTransform: "uppercase", letterSpacing: 0.6, margin: "16px 0 8px" }}>Belge Geçerliliği</div>
         <Field label="Belge Geçerlilik Süresi (yıl)">
-          <input type="number" min={1} step={1} value={validityYears} onChange={(e) = /> setValidityYears(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} step={1} value={validityYears} onChange={(e) => setValidityYears(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Kaç Gün Kala Hatırlatma Gösterilsin">
-          <input type="number" min={1} step={5} value={reminderWindowDays} onChange={(e) = /> setReminderWindowDays(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} step={5} value={reminderWindowDays} onChange={(e) => setReminderWindowDays(Number(e.target.value))} style={inputStyle} />
         </Field>
 
         <button onClick={() => onSave({ startHour, endHour, stepMin, validityYears, reminderWindowDays })} style={{ ...primaryBtn, width: "100%", marginTop: 6 }}>
