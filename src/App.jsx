@@ -928,10 +928,10 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
         </div>
 
         <Field label="Ad Soyad">
-          <input value={clientName} onChange={(e)) => setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
+          <input value={clientName} onChange={(e) => setClientName(e.target.value)} placeholder="Örn. Ahmet Yılmaz" style={inputStyle} />
         </Field>
         <Field label="Telefon">
-          <input value={phone} onChange={(e)) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" style={inputStyle} />
+          <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="05xx xxx xx xx" style={inputStyle} />
         </Field>
         <Field label="Hizmet Türü">
           <select value={service} onChange={(e) => setService(e.target.value)} style={inputStyle}>
@@ -939,7 +939,7 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
           </select>
         </Field>
         <Field label="Ücret (₺)">
-          <input type="number" value={price} onChange={(e)) => setPrice(e.target.value)} placeholder="0" style={inputStyle} />
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="0" style={inputStyle} />
         </Field>
         <Field label="Ödeme Durumu">
           <div style={{ display: "flex", gap: 6 }}>
@@ -954,11 +954,11 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
         </Field>
         {payStatus === "kismi" && (
           <Field label="Ödenen Tutar (₺)">
-            <input type="number" value={paidAmount} onChange={(e)) => setPaidAmount(e.target.value)} placeholder="0" style={inputStyle} />
+            <input type="number" value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} placeholder="0" style={inputStyle} />
           </Field>
         )}
         <Field label="Not (opsiyonel)">
-          <input value={note} onChange={(e)) => setNote(e.target.value)} placeholder="Kurum, sevk vb." style={inputStyle} />
+          <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="Kurum, sevk vb." style={inputStyle} />
         </Field>
 
         <div style={{ background: "white", border: "1px solid #ece7d8", borderRadius: 12, padding: 12, marginBottom: 12 }}>
@@ -987,13 +987,13 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
 
         <div style={{ background: "white", border: "1px solid #ece7d8", borderRadius: 12, padding: 12, marginBottom: 12 }}>
           <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-            <input type="checkbox" checked={documentIssued} onChange={(e)) => setDocumentIssued(e.target.checked)} style={{ width: 16, height: 16 }} />
+            <input type="checkbox" checked={documentIssued} onChange={(e) => setDocumentIssued(e.target.checked)} style={{ width: 16, height: 16 }} />
             <span style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>Belge Teslim Edildi</span>
           </label>
           {documentIssued && (
             <div style={{ marginTop: 10 }}>
               <Field label="Belge Teslim Tarihi">
-                <input type="date" value={issueDate} onChange={(e)) => setIssueDate(e.target.value)} style={inputStyle} />
+                <input type="date" value={issueDate} onChange={(e) => setIssueDate(e.target.value)} style={inputStyle} />
               </Field>
               <div style={{ fontSize: 12, color: "#8a8474" }}>
                 Geçerlilik süresi <strong style={{ color: NAVY }}>{fmtDateShortTR(expiryPreview)}</strong> tarihinde sona erecek ({validityYears} yıl).
@@ -1043,21 +1043,21 @@ function SettingsModal({ settings, onClose, onSave }) {
 
         <div style={{ fontSize: 11, fontWeight: 800, color: GOLD, textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 8 }}>Çalışma Saatleri</div>
         <Field label="Başlangıç Saati">
-          <input type="number" min={0} max={23} value={startHour} onChange={(e)) => setStartHour(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={0} max={23} value={startHour} onChange={(e) => setStartHour(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Bitiş Saati">
-          <input type="number" min={1} max={24} value={endHour} onChange={(e)) => setEndHour(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} max={24} value={endHour} onChange={(e) => setEndHour(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Randevu Süresi (dakika)">
-          <input type="number" min={10} step={5} value={stepMin} onChange={(e)) => setStepMin(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={10} step={5} value={stepMin} onChange={(e) => setStepMin(Number(e.target.value))} style={inputStyle} />
         </Field>
 
         <div style={{ fontSize: 11, fontWeight: 800, color: GOLD, textTransform: "uppercase", letterSpacing: 0.6, margin: "16px 0 8px" }}>Belge Geçerliliği</div>
         <Field label="Belge Geçerlilik Süresi (yıl)">
-          <input type="number" min={1} step={1} value={validityYears} onChange={(e)) => setValidityYears(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} step={1} value={validityYears} onChange={(e) => setValidityYears(Number(e.target.value))} style={inputStyle} />
         </Field>
         <Field label="Kaç Gün Kala Hatırlatma Gösterilsin">
-          <input type="number" min={1} step={5} value={reminderWindowDays} onChange={(e)) => setReminderWindowDays(Number(e.target.value))} style={inputStyle} />
+          <input type="number" min={1} step={5} value={reminderWindowDays} onChange={(e) => setReminderWindowDays(Number(e.target.value))} style={inputStyle} />
         </Field>
 
         <button onClick={() => onSave({ startHour, endHour, stepMin, validityYears, reminderWindowDays })} style={{ ...primaryBtn, width: "100%", marginTop: 6 }}>
@@ -1083,3 +1083,5 @@ const inputStyle = { width: "100%", padding: "10px 12px", borderRadius: 10, bord
 const iconBtnStyle = { background: "white", border: "1px solid #ece7d8", borderRadius: 8, padding: 6, cursor: "pointer", display: "flex" };
 const primaryBtn = { background: NAVY, color: "white", border: "none", borderRadius: 11, padding: "12px 16px", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6 };
 const ghostBtn = { background: "white", border: "1px solid #e3ded0", borderRadius: 11, padding: "12px 16px", fontSize: 14, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 };
+
+
