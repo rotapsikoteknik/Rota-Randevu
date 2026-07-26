@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+﻿import { useState, useEffect, useMemo, useCallback } from "react";
 import { Plus, Phone, X, Check, Clock, ChevronLeft, ChevronRight, Wallet, CalendarDays, AlertCircle, Trash2, Settings, Car, Users, Printer, Search, ArrowLeft } from "lucide-react";
 import { supabase } from "./supabaseClient";
 
@@ -562,7 +562,7 @@ function ClientsView({ clients, onOpenTaahhutname }) {
         <Search size={15} color="#8a8474" style={{ position: "absolute", left: 12, top: 12 }} />
         <input
           value={q}
-          onChange={(e)) => /> setQ(e.target.value)}
+          onChange={(e) => setQ(e.target.value)}
           placeholder="Danışan ara..."
           style={{ ...inputStyle, paddingLeft: 34 }}
         />
@@ -976,7 +976,7 @@ function ApptModal({ slot, dateIso, validityYears, existing, onClose, onSave, on
                   <input
                     type={f.type || "text"}
                     value={extraInfo[f.key] || ""}
-                    onChange={(e)) => /> setExtra(f.key, e.target.value)}
+                    onChange={(e) => setExtra(f.key, e.target.value)}
                     style={inputStyle}
                   />
                 </Field>
