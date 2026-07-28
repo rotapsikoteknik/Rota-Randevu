@@ -440,15 +440,11 @@ export default function App() {
       )}
 
       {view === "rapor" && (
-        <RaporView appointments={Object.values(appointments).flatMap(dayAppts =>
-          Object.entries(dayAppts).map(([slot, appt]) => ({ ...appt, slot }))
-        )} />
+        <RaporView appointments={allAppts} />
       )}
 
       {view === "muhasebe" && (
-        <MuhasebeView appointments={Object.entries(appointments).flatMap(([date, dayAppts]) =>
-          Object.entries(dayAppts).map(([slot, appt]) => ({ ...appt, slot, date }))
-        )} />
+        <MuhasebeView appointments={allAppts} />
       )}
 
       {view === "takvim" && (
