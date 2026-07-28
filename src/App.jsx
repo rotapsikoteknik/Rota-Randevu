@@ -392,6 +392,9 @@ export default function App() {
             <button onClick={() => setView(view === "muhasebe" ? "takvim" : "muhasebe")} style={{ background: view === "muhasebe" ? GOLD : "rgba(255,255,255,0.08)", border: "none", borderRadius: 10, padding: 9, color: view === "muhasebe" ? NAVY : "white", cursor: "pointer" }} title="Muhasebe">
               <BarChart2 size={17} />
             </button>
+            <button onClick={() => setView(view === "mesajlar" ? "takvim" : "mesajlar")} style={{ background: view === "mesajlar" ? GOLD : "rgba(255,255,255,0.08)", border: "none", borderRadius: 10, padding: 9, color: view === "mesajlar" ? NAVY : "white", cursor: "pointer" }} title="Mesajlar">
+              <Phone size={17} />
+            </button>
             <button onClick={() => setShowSettings(true)} style={{ background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 10, padding: 9, color: "white", cursor: "pointer" }}>
               <Settings size={17} />
             </button>
@@ -429,6 +432,9 @@ export default function App() {
         {view === "muhasebe" && (
           <div style={{ marginTop: 18, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>Gelir takibi ve ön muhasebe</div>
         )}
+        {view === "mesajlar" && (
+          <div style={{ marginTop: 18, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>WhatsApp toplu mesaj gönderimi</div>
+        )}
       </div>
 
       {view === "danisanlar" && (
@@ -437,6 +443,10 @@ export default function App() {
 
       {view === "taahhutname" && (
         <TaahhutnameView prefill={taahhutClient} onBack={() => setView(taahhutClient ? "danisanlar" : "takvim")} />
+      )}
+
+      {view === "mesajlar" && (
+        <MesajlarView clients={clients} appointments={allAppts} />
       )}
 
       {view === "rapor" && (
@@ -1457,6 +1467,244 @@ function MuhasebeView({ appointments }) {
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ─── MESAJLAR VIEW ────────────────────────────────────────────────────────────
+const WA_NUMBER = "905469716771"; // 0546 971 67 71
+
+const MESAJ_SABLONLAR = [
+  {
+    id: "hatirlama",
+    label: "📅 Randevu Hatırlatma",
+    metin: "Merhaba {ad}, yarın randevunuz bulunmaktadır. Rota Psikoteknik olarak sizi bekliyoruz. Bilgi için: 0546 971 67 71",
+  },
+  {
+    id: "sonuc_gecti",
+    label: "✅ Test Sonucu - Geçti",
+    metin: "Merhaba {ad}, psikoteknik testiniz başarıyla tamamlanmıştır. Belgeniz hazırlanmaktadır. Bilgi için: 0546 971 67 71",
+  },
+  {
+    id: "sonuc_kaldi",
+    label: "❌ Test Sonucu - Kaldı",
+    metin: "Merhaba {ad}, psikoteknik testiniz tamamlanmıştır. Sonuçlarınız hakkında bilgi almak için lütfen bizimle iletişime geçin: 0546 971 67 71",
+  },
+  {
+    id: "belge_teslim",
+    label: "📄 Belge Hazır",
+    metin: "Merhaba {ad}, psikoteknik belgeniz hazır olmuştur. Ofisimizden teslim alabilirsiniz. Bilgi için: 0546 971 67 71",
+  },
+  {
+    id: "kampanya",
+    label: "📣 Kampanya / Duyuru",
+    metin: "Merhaba {ad}, Rota Psikoteknik olarak yeni hizmetlerimiz hakkında bilgi almak için bizi arayabilirsiniz: 0546 971 67 71",
+  },
+  {
+    id: "borclu",
+    label: "💳 Ödeme Hatırlatma",
+    metin: "Merhaba {ad}, psikoteknik hizmetimize ait ödemeniz beklenmektedir. Bilgi için: 0546 971 67 71",
+  },
+  {
+    id: "ozel",
+    label: "✏️ Özel Mesaj",
+    metin: "",
+  },
+];
+
+function MesajlarView({ clients, appointments }) {
+  const [sablon, setSablon] = useState(MESAJ_SABLONLAR[0]);
+  const [editedMetin, setEditedMetin] = useState(MESAJ_SABLONLAR[0].metin);
+  const [selected, setSelected] = useState({});
+  const [filtre, setFiltre] = useState("hepsi");
+  const [step, setStep] = useState("liste"); // "liste" | "onizleme"
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [kisiBazMetin, setKisiBazMetin] = useState({});
+
+  // Filtrele
+  const filtered = clients.filter(c => {
+    if (filtre === "hepsi") return true;
+    if (filtre === "bekliyor") return c.totalPending > 0;
+    if (filtre === "gelen_ay") {
+      const thisMonth = new Date().toISOString().slice(0,7);
+      return appointments.some(a => a.clientName === c.clientName && (a.date||"").startsWith(thisMonth));
+    }
+    if (filtre === "gecti") return appointments.some(a => a.clientName === c.clientName && a.testResult === "gecti");
+    if (filtre === "kaldi") return appointments.some(a => a.clientName === c.clientName && a.testResult === "kaldi");
+    return true;
+  }).filter(c => c.phone);
+
+  const selectedList = filtered.filter(c => selected[c.clientName]);
+
+  const handleSablonChange = (s) => {
+    setSablon(s);
+    setEditedMetin(s.metin);
+    setKisiBazMetin({});
+  };
+
+  const kisiMetin = (c) => {
+    if (kisiBazMetin[c.clientName] !== undefined) return kisiBazMetin[c.clientName];
+    return editedMetin.replace("{ad}", c.clientName.split(" ")[0]);
+  };
+
+  const toggleAll = () => {
+    if (selectedList.length === filtered.length) setSelected({});
+    else { const s = {}; filtered.forEach(c => { s[c.clientName] = true; }); setSelected(s); }
+  };
+
+  const goSend = () => {
+    if (selectedList.length === 0) return;
+    const init = {};
+    selectedList.forEach(c => { init[c.clientName] = kisiMetin(c); });
+    setKisiBazMetin(init);
+    setCurrentIdx(0);
+    setStep("onizleme");
+  };
+
+  const sendCurrent = () => {
+    const c = selectedList[currentIdx];
+    const metin = kisiBazMetin[c.clientName] || kisiMetin(c);
+    const url = `https://wa.me/${c.phone.replace(/\D/g,"")}?text=${encodeURIComponent(metin)}`;
+    window.open(url, "_blank");
+    setTimeout(() => {
+      if (currentIdx < selectedList.length - 1) setCurrentIdx(i => i+1);
+      else setStep("bitti");
+    }, 800);
+  };
+
+  const inputStyle2 = { width: "100%", padding: "10px 12px", borderRadius: 10, border: "1px solid #e3ded0", fontSize: 13, fontFamily: "inherit", color: NAVY, background: "white", boxSizing: "border-box" };
+  const sel = { width: "100%", padding: "9px 10px", borderRadius: 9, border: "1px solid #e3ded0", fontSize: 12, fontFamily: "inherit", color: NAVY, background: "white", marginBottom: 8 };
+
+  if (step === "bitti") return (
+    <div style={{ padding: "40px 16px", textAlign: "center" }}>
+      <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+      <div style={{ fontSize: 18, fontWeight: 800, color: NAVY, marginBottom: 8 }}>Tüm mesajlar gönderildi!</div>
+      <div style={{ fontSize: 13, color: "#8a8474", marginBottom: 20 }}>{selectedList.length} kişiye WhatsApp mesajı açıldı</div>
+      <button onClick={() => { setStep("liste"); setSelected({}); setCurrentIdx(0); }} style={{ ...primaryBtn, margin: "0 auto" }}>
+        Yeni Mesaj
+      </button>
+    </div>
+  );
+
+  if (step === "onizleme") {
+    const c = selectedList[currentIdx];
+    const metin = kisiBazMetin[c.clientName] || kisiMetin(c);
+    return (
+      <div style={{ padding: "0 16px 40px", maxWidth: 480, margin: "0 auto" }}>
+        <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: NAVY }}>
+              {currentIdx + 1} / {selectedList.length} — {c.clientName}
+            </div>
+            <div style={{ fontSize: 11, color: "#8a8474" }}>{c.phone}</div>
+          </div>
+
+          <div style={{ fontSize: 11, fontWeight: 700, color: "#8a8474", marginBottom: 6 }}>MESAJI DÜZENLE</div>
+          <textarea
+            value={kisiBazMetin[c.clientName] !== undefined ? kisiBazMetin[c.clientName] : kisiMetin(c)}
+            onChange={e => setKisiBazMetin(prev => ({ ...prev, [c.clientName]: e.target.value }))}
+            rows={5}
+            style={{ ...inputStyle2, resize: "vertical" }}
+          />
+
+          <div style={{ background: "#E7F5EE", borderRadius: 10, padding: "8px 12px", marginTop: 8, fontSize: 11, color: "#3D7A5C" }}>
+            📱 WhatsApp'ta {c.phone} numarasına gönderilecek
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => { if (currentIdx > 0) setCurrentIdx(i => i-1); else setStep("liste"); }}
+            style={{ ...ghostBtn, flex: 1, justifyContent: "center" }}>
+            ‹ Geri
+          </button>
+          <button onClick={sendCurrent} style={{ ...primaryBtn, flex: 2, justifyContent: "center", background: "#25D366" }}>
+            WhatsApp'ta Aç →
+          </button>
+        </div>
+
+        {selectedList.length > 1 && (
+          <div style={{ display: "flex", gap: 4, marginTop: 10, justifyContent: "center" }}>
+            {selectedList.map((_, i) => (
+              <div key={i} onClick={() => setCurrentIdx(i)} style={{
+                width: 8, height: 8, borderRadius: "50%", cursor: "pointer",
+                background: i === currentIdx ? NAVY : i < currentIdx ? "#3D7A5C" : "#e3ded0"
+              }} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ padding: "0 16px 40px", maxWidth: 480, margin: "0 auto" }}>
+
+      {/* Şablon seçimi */}
+      <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: NAVY, marginBottom: 8 }}>📝 Mesaj Şablonu</div>
+        <select value={sablon.id} onChange={e => handleSablonChange(MESAJ_SABLONLAR.find(s => s.id === e.target.value))} style={sel}>
+          {MESAJ_SABLONLAR.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+        </select>
+        <div style={{ fontSize: 11, fontWeight: 700, color: "#8a8474", marginBottom: 6 }}>MESAJ METNİ <span style={{ color: GOLD }}>{"{ad}"} = kişinin adı</span></div>
+        <textarea
+          value={editedMetin}
+          onChange={e => { setEditedMetin(e.target.value); setKisiBazMetin({}); }}
+          rows={4}
+          style={{ ...inputStyle2, resize: "vertical" }}
+          placeholder="Mesaj metnini buraya yazın..."
+        />
+        <div style={{ fontSize: 10, color: "#8a8474", marginTop: 4 }}>{editedMetin.length} karakter · Gönderim sırasında her kişi için ayrıca düzenleyebilirsiniz</div>
+      </div>
+
+      {/* Alıcı filtresi */}
+      <div style={{ background: "white", borderRadius: 16, padding: 16, marginBottom: 12, boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: NAVY, marginBottom: 8 }}>👥 Alıcılar</div>
+        <select value={filtre} onChange={e => { setFiltre(e.target.value); setSelected({}); }} style={sel}>
+          <option value="hepsi">Tüm danışanlar (telefonu olanlar)</option>
+          <option value="bekliyor">Ödeme bekleyenler</option>
+          <option value="gelen_ay">Bu ay gelenler</option>
+          <option value="gecti">Testi geçenler</option>
+          <option value="kaldi">Testte kalanlar</option>
+        </select>
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div style={{ fontSize: 12, color: "#8a8474" }}>{filtered.length} kişi listelendi</div>
+          <button onClick={toggleAll} style={{ fontSize: 11, fontWeight: 700, color: NAVY, background: "none", border: "none", cursor: "pointer" }}>
+            {selectedList.length === filtered.length ? "Tümünü Kaldır" : "Tümünü Seç"}
+          </button>
+        </div>
+
+        <div style={{ maxHeight: 280, overflowY: "auto" }}>
+          {filtered.map(c => (
+            <div key={c.clientName} onClick={() => setSelected(prev => ({ ...prev, [c.clientName]: !prev[c.clientName] }))}
+              style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 8px", borderRadius: 10, cursor: "pointer",
+                background: selected[c.clientName] ? "#EEF4FF" : "transparent",
+                border: selected[c.clientName] ? "1px solid #c0d4f5" : "1px solid transparent", marginBottom: 4 }}>
+              <div style={{ width: 20, height: 20, borderRadius: 6, border: `2px solid ${selected[c.clientName] ? NAVY : "#e3ded0"}`,
+                background: selected[c.clientName] ? NAVY : "white", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                {selected[c.clientName] && <Check size={12} color="white" />}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: NAVY }}>{c.clientName}</div>
+                <div style={{ fontSize: 11, color: "#8a8474" }}>{c.phone}</div>
+              </div>
+              {c.totalPending > 0 && <span style={{ fontSize: 10, fontWeight: 700, color: "#B2811F", background: "#FBF2DF", padding: "2px 7px", borderRadius: 20 }}>Borçlu</span>}
+            </div>
+          ))}
+          {filtered.length === 0 && <div style={{ color: "#8a8474", fontSize: 13, textAlign: "center", padding: 20 }}>Bu filtrede telefonu kayıtlı danışan yok</div>}
+        </div>
+      </div>
+
+      {/* Gönder butonu */}
+      <button onClick={goSend} disabled={selectedList.length === 0}
+        style={{ ...primaryBtn, width: "100%", background: selectedList.length > 0 ? "#25D366" : "#ccc", justifyContent: "center" }}>
+        <Phone size={16} /> {selectedList.length > 0 ? `${selectedList.length} Kişiye Gönder` : "Kişi Seçin"}
+      </button>
+      {selectedList.length > 0 && (
+        <div style={{ fontSize: 11, color: "#8a8474", textAlign: "center", marginTop: 6 }}>
+          Her mesaj gönderim öncesi ayrıca düzenlenebilir
+        </div>
+      )}
     </div>
   );
 }
